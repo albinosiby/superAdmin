@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block header %}Edit Client{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <form action="{{ url_for('main.edit_client', uid=org.id) }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name">Organization Name</label>
+            <input type="text" id="name" name="name" class="form-control" value="{{ org.name }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="type">Type</label>
+            <select id="type" name="type" class="form-control" required>
+                <option value="College" {% if org.type=='College' %}selected{% endif %}>College</option>
+                <option value="School" {% if org.type=='School' %}selected{% endif %}>School</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" class="form-control" value="{{ org.email }}" required readonly>
+            <small style="color: #6b7280">Email cannot be changed.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" class="form-control" value="{{ org.phone }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address</label>
+            <textarea id="address" name="address" class="form-control" required>{{ org.address }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="logo">Logo (Leave empty to keep current)</label>
+            <input type="file" id="logo" name="logo" class="form-control" accept="image/*">
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ url_for('main.dashboard') }}" class="btn"
+                style="color: #6b7280; text-decoration: none;">Cancel</a>
+            <button type="submit" class="btn btn-primary">Update Client</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -50,14 +50,14 @@
         {% if org.feeDetails %}
         <div class="detail-item">
             <label style="color: #6b7280; font-size: 0.9rem; font-weight: 500;">Fee Payment Type</label>
-            <p style="font-size: 1.1rem; color: #111827; margin-top: 5px;">{{ org.feeDetails.paymentType }}</p>
-        </div>
-        {% if org.feeDetails.numberOfTerms %}
-        <div class="detail-item">
-            <label style="color: #6b7280; font-size: 0.9rem; font-weight: 500;">Number of Terms</label>
-            <p style="font-size: 1.1rem; color: #111827; margin-top: 5px;">{{ org.feeDetails.numberOfTerms }}</p>
+            <p style="font-size: 1.1rem; color: #111827; margin-top: 5px;">{{ org.feeDetails }}</p>
         </div>
         {% endif %}
+        {% if org.numberOfTerms %}
+        <div class="detail-item">
+            <label style="color: #6b7280; font-size: 0.9rem; font-weight: 500;">Number of Terms</label>
+            <p style="font-size: 1.1rem; color: #111827; margin-top: 5px;">{{ org.numberOfTerms }}</p>
+        </div>
         {% endif %}
 
         {% if org.createdAt %}

@@ -28,15 +28,15 @@ def add_client():
             fee_type = request.form.get('fee_type')
             term_count = request.form.get('term_count')
             
-            fee_details = {}
+            fee_details_val = fee_type
+            number_of_terms = None
+
             if fee_type == 'Yearly':
-                fee_details['paymentType'] = 'Yearly One Time'
+                fee_details_val = 'Yearly One Time'
             elif fee_type == 'Termly':
-                fee_details['paymentType'] = 'Termly'
+                fee_details_val = 'Termly'
                 if term_count:
-                    fee_details['numberOfTerms'] = int(term_count)
-            else:
-                fee_details['paymentType'] = fee_type
+                    number_of_terms = int(term_count)
             
             logo_filename = "default_logo.png"
             if 'logo' in request.files:
@@ -75,7 +75,8 @@ def add_client():
                 "type": org_type,
                 "email": email,
 
-                "feeDetails": fee_details,
+                "feeDetails": fee_details_val,
+                "numberOfTerms": number_of_terms,
                 "logo": logo_url,
                 "createdAt": datetime.datetime.now()
             }
@@ -117,15 +118,15 @@ def edit_client(uid):
             fee_type = request.form.get('fee_type')
             term_count = request.form.get('term_count')
             
-            fee_details = {}
+            fee_details_val = fee_type
+            number_of_terms = None
+
             if fee_type == 'Yearly':
-                fee_details['paymentType'] = 'Yearly One Time'
+                fee_details_val = 'Yearly One Time'
             elif fee_type == 'Termly':
-                fee_details['paymentType'] = 'Termly'
+                fee_details_val = 'Termly'
                 if term_count:
-                    fee_details['numberOfTerms'] = int(term_count)
-            else:
-                fee_details['paymentType'] = fee_type
+                    number_of_terms = int(term_count)
             
             org_data = {
                 "name": name,
@@ -134,7 +135,8 @@ def edit_client(uid):
                 "type": org_type,
 
                 "email": email,
-                "feeDetails": fee_details
+                "feeDetails": fee_details_val,
+                "numberOfTerms": number_of_terms
             }
 
             if 'logo' in request.files:

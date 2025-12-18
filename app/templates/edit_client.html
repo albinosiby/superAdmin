@@ -46,19 +46,16 @@
 
             <label for="fee_type">Payment Frequency</label>
             <select id="fee_type" name="fee_type" class="form-control" required onchange="toggleFeeFields()">
-                <option value="Yearly" {% if org.feeDetails and org.feeDetails.paymentType=='Yearly' %}selected{% endif
-                    %}>Yearly</option>
-                <option value="Monthly" {% if org.feeDetails and org.feeDetails.paymentType=='Monthly' %}selected{%
-                    endif %}>Monthly</option>
-                <option value="Termly" {% if org.feeDetails and org.feeDetails.paymentType=='Termly' %}selected{% endif
-                    %}>Termly</option>
+                <option value="Yearly" {% if org.feeDetails=='Yearly One Time' %}selected{% endif %}>Yearly</option>
+                <option value="Monthly" {% if org.feeDetails=='Monthly' %}selected{% endif %}>Monthly</option>
+                <option value="Termly" {% if org.feeDetails=='Termly' %}selected{% endif %}>Termly</option>
             </select>
         </div>
 
         <div class="form-group" id="term_count_group" style="display: none;">
             <label for="term_count">Number of Terms</label>
             <input type="number" id="term_count" name="term_count" class="form-control" min="1"
-                value="{{ org.feeDetails.numberOfTerms if org.feeDetails and org.feeDetails.numberOfTerms else '' }}">
+                value="{{ org.numberOfTerms if org.numberOfTerms else '' }}">
         </div>
 
         <script>

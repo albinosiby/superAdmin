@@ -16,8 +16,13 @@
         <div class="client-header">
             <div class="client-logo">
                 {% if org.logo and org.logo != 'default_logo.png' %}
+                {% if org.logo.startswith('http') %}
+                <img src="{{ org.logo }}" alt="{{ org.name }}"
+                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                {% else %}
                 <img src="{{ url_for('static', filename='images/' + org.logo) }}" alt="{{ org.name }}"
                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                {% endif %}
                 {% else %}
                 <i class="fas fa-university"></i>
                 {% endif %}

@@ -46,6 +46,41 @@
             <input type="file" id="logo" name="logo" class="form-control" accept="image/*">
         </div>
 
+        <div class="form-group">
+            <label
+                style="font-weight: 600; font-size: 1.1em; margin-bottom: 15px; display: block; color: var(--primary-color);">Fee
+                Details</label>
+
+            <label for="fee_type">Payment Frequency</label>
+            <select id="fee_type" name="fee_type" class="form-control" required onchange="toggleFeeFields()">
+                <option value="Yearly">Yearly</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Termly">Termly</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="term_count_group" style="display: none;">
+            <label for="term_count">Number of Terms</label>
+            <input type="number" id="term_count" name="term_count" class="form-control" min="1" placeholder="e.g. 3">
+        </div>
+
+        <script>
+            function toggleFeeFields() {
+                const feeType = document.getElementById('fee_type').value;
+                const termCountGroup = document.getElementById('term_count_group');
+                const termCountInput = document.getElementById('term_count');
+
+                if (feeType === 'Termly') {
+                    termCountGroup.style.display = 'block';
+                    termCountInput.required = true;
+                } else {
+                    termCountGroup.style.display = 'none';
+                    termCountInput.required = false;
+                    termCountInput.value = '';
+                }
+            }
+        </script>
+
         <div class="form-actions">
             <a href="{{ url_for('main.dashboard') }}" class="btn"
                 style="color: #6b7280; text-decoration: none;">Cancel</a>

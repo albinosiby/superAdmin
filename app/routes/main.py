@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from firebase_admin import firestore
-from app.services.firebase_service import create_client_user, add_organization_data, get_all_organizations, delete_organization, get_organization, update_organization
+from app.services.firebase_service import create_client_user, add_organization_data, get_all_organizations, delete_organization, get_organization, update_organization, initialize_organization_rtdb, upload_logo_to_storage
 import os
 from werkzeug.utils import secure_filename
 import datetime
@@ -21,20 +21,35 @@ def add_client():
             phone = request.form.get('phone')
             org_type = request.form.get('type')
             email = request.form.get('email')
+
             password = request.form.get('password')
+            
+            # Fee Details
+            fee_type = request.form.get('fee_type')
+            term_count = request.form.get('term_count')
+            
+            fee_details = {}
+            if fee_type == 'Yearly':
+                fee_details['paymentType'] = 'Yearly One Time'
+            elif fee_type == 'Termly':
+                fee_details['paymentType'] = 'Termly'
+                if term_count:
+                    fee_details['numberOfTerms'] = int(term_count)
+            else:
+                fee_details['paymentType'] = fee_type
             
             logo_filename = "default_logo.png"
             if 'logo' in request.files:
                 file = request.files['logo']
                 if file and file.filename != '':
-                    filename = secure_filename(file.filename)
-                    # Ensure directory exists
-                    upload_folder = os.path.join(current_app.root_path, 'static/images')
-                    if not os.path.exists(upload_folder):
-                        os.makedirs(upload_folder)
+
                     
-                    file.save(os.path.join(upload_folder, filename))
-                    logo_filename = filename
+                    # Temporarily save to upload
+                    # Actually, we can pass the stream directly if helper supports it.
+                    # My helper uses file.upload_from_file so we can pass the request.files['logo'] directly if we don't save it first.
+                    # However, create_client_user needs to happen FIRST to get the UID.
+                    # So we hold the file object.
+                    logo_filename = "pending"
 
             if not all([name, address, phone, org_type, email, password]):
                  flash("All fields are required", "error")
@@ -43,6 +58,15 @@ def add_client():
             # 1. Create Auth User
             uid = create_client_user(email, password, name)
 
+            # 1.5 Upload Logo if present
+            logo_url = "default_logo.png"
+            if 'logo' in request.files:
+                file = request.files['logo']
+                if file and file.filename != '':
+                    url = upload_logo_to_storage(file, uid)
+                    if url:
+                         logo_url = url
+
             # 2. Add Organization Data
             org_data = {
                 "name": name,
@@ -50,11 +74,16 @@ def add_client():
                 "phone": phone,
                 "type": org_type,
                 "email": email,
-                "logo": logo_filename,
+
+                "feeDetails": fee_details,
+                "logo": logo_url,
                 "createdAt": datetime.datetime.now()
             }
 
             add_organization_data(uid, org_data)
+            
+            # 3. Initialize RTDB
+            initialize_organization_rtdb(uid)
 
             flash("Client added successfully", "success")
             return redirect(url_for('main.dashboard'))
@@ -84,23 +113,37 @@ def edit_client(uid):
             org_type = request.form.get('type')
             email = request.form.get('email')
             
+            # Fee Details
+            fee_type = request.form.get('fee_type')
+            term_count = request.form.get('term_count')
+            
+            fee_details = {}
+            if fee_type == 'Yearly':
+                fee_details['paymentType'] = 'Yearly One Time'
+            elif fee_type == 'Termly':
+                fee_details['paymentType'] = 'Termly'
+                if term_count:
+                    fee_details['numberOfTerms'] = int(term_count)
+            else:
+                fee_details['paymentType'] = fee_type
+            
             org_data = {
                 "name": name,
                 "address": address,
                 "phone": phone,
                 "type": org_type,
-                "email": email
+
+                "email": email,
+                "feeDetails": fee_details
             }
 
             if 'logo' in request.files:
                 file = request.files['logo']
                 if file and file.filename != '':
-                    filename = secure_filename(file.filename)
-                    upload_folder = os.path.join(current_app.root_path, 'static/images')
-                    if not os.path.exists(upload_folder):
-                        os.makedirs(upload_folder)
-                    file.save(os.path.join(upload_folder, filename))
-                    org_data['logo'] = filename
+                    # Update logo in storage
+                    url = upload_logo_to_storage(file, uid)
+                    if url:
+                        org_data['logo'] = url
             
             update_organization(uid, org_data)
             flash("Client updated successfully", "success")

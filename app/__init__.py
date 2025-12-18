@@ -21,7 +21,10 @@ def create_app(config_class=Config):
                 import json
                 cred_dict = json.loads(cred_val)
                 cred = credentials.Certificate(cred_dict)
-                firebase_admin.initialize_app(cred)
+                firebase_admin.initialize_app(cred, {
+                    'databaseURL': app.config.get('FIREBASE_DATABASE_URL'),
+                    'storageBucket': app.config.get('FIREBASE_STORAGE_BUCKET')
+                })
                 db = firestore.client()
                 print("Firebase initialized successfully using raw JSON credentials from environment variable.")
             except Exception as e:
@@ -39,7 +42,10 @@ def create_app(config_class=Config):
             if os.path.exists(cred_path):
                 try:
                     cred = credentials.Certificate(cred_path)
-                    firebase_admin.initialize_app(cred)
+                    firebase_admin.initialize_app(cred, {
+                        'databaseURL': app.config.get('FIREBASE_DATABASE_URL'),
+                        'storageBucket': app.config.get('FIREBASE_STORAGE_BUCKET')
+                    })
                     db = firestore.client()
                     print(f"Firebase initialized successfully using {cred_path}")
                 except Exception as e:
